@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console Python Interactive</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #editor { border: 1px solid #ccc; }
+        #output { white-space: pre-wrap; background-color: #f0f0f0; padding: 10px; margin-top: 10px; }
+        button { margin-top: 10px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Console Python Interactive</h1>
+    <div id="editor"></div>
+    <button onclick="runPython()">Exécuter le code</button>
+    <div id="output"></div>
+
+    <script>
+        let pyodideReadyPromise = loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.22.1/full/"
+        });
+
+        let editor = CodeMirror(document.getElementById("editor"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true
+        });
+
+        editor.setValue("# Écrivez votre code Python ici\nprint('Bonjour, monde !')");
+
+        async function runPython() {
+            let pyodide = await pyodideReadyPromise;
+            try {
+                let output = await pyodide.runPythonAsync(editor.getValue());
+                document.getElementById("output").textContent = output;
+            } catch (err) {
+                document.getElementById("output").textContent = "Erreur : " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
